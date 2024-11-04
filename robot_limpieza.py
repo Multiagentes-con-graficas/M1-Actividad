@@ -1,8 +1,6 @@
 from mesa import Agent, Model
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
-from mesa.visualization.modules import CanvasGrid
-from mesa.visualization.ModularVisualization import ModularServer
 import random
 
 
@@ -17,7 +15,6 @@ class RobotLimpieza(Agent):
         )
         new_position = self.random.choice(available_cells)
         self.model.grid.move_agent(self, new_position)
-        print("Moving to cell", new_position)
 
     def step(self):
         cell_contents = self.model.grid.get_cell_list_contents([self.pos])
@@ -25,7 +22,6 @@ class RobotLimpieza(Agent):
             (obj for obj in cell_contents if isinstance(obj, Cell)), None)
         if cell and cell.estado == 1:
             cell.estado = 0
-            print("Cleaning cell")
         else:
             self.move()
 
@@ -39,20 +35,28 @@ class Cell(Agent):
 
 
 class RobotModel(Model):
-    def __init__(self, num_agents, width, height):
+    def __init__(self, num_agents, width, height, time_ejection, percentage_dirt):
         super().__init__()
         self.num_agents = num_agents
+        self.time_ejection = time_ejection
         self.grid = MultiGrid(width, height, False)
         self.schedule = RandomActivation(self)
 
-        # Create cells with random clean/dirty states
-        for x in range(width):
-            for y in range(height):
-                estado = random.choice([0, 1])  # 0: Clean, 1: Dirty
+        total_cells = width * height
+        num_dirty_cells = int(total_cells * percentage_dirt)
+
+        dirty_positions = set()
+        while len(dirty_positions) < num_dirty_cells:
+            x = self.random.randrange(self.grid.width)
+            y = self.random.randrange(self.grid.height)
+            dirty_positions.add((x, y))
+
+        for x in range(self.grid.width):
+            for y in range(self.grid.height):
+                estado = 1 if (x, y) in dirty_positions else 0
                 cell = Cell((x, y), self, estado)
                 self.grid.place_agent(cell, (x, y))
 
-        # Create agents and place them at random positions
         for i in range(self.num_agents):
             robot = RobotLimpieza(i, self)
             self.schedule.add(robot)
@@ -62,7 +66,13 @@ class RobotModel(Model):
 
     def step(self):
         """Advance the model by one step."""
-        self.schedule.step()
+
+        if self.time_ejection <= 0:
+            print("end")
+            self.running = False
+        else:
+            self.schedule.step()
+            self.time_ejection -= 1
 
 
 def agent_portrayal(agent):
@@ -85,18 +95,3 @@ def agent_portrayal(agent):
             "h": 1
         }
     return portrayal
-
-
-if __name__ == "__main__":
-    width = 10
-    height = 10
-    num_agents = 5
-    grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
-    server = ModularServer(
-        RobotModel,
-        [grid],
-        "Cleaning Model",
-        {"num_agents": num_agents, "width": width, "height": height}
-    )
-    server.port = 8521
-    server.launch()
