@@ -5,8 +5,8 @@ from mesa.visualization.ModularVisualization import ModularServer
 if __name__ == "__main__":
     width = 20
     height = 20
-    num_agents = 5
-    percentage_dirt = 0
+    num_agents = 10
+    percentage_dirt = 0.5
     time_ejection = 100
     grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
     server = ModularServer(
