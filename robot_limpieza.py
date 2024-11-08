@@ -45,6 +45,9 @@ class RobotModel(Model):
         total_cells = width * height
         num_dirty_cells = int(total_cells * percentage_dirt)
 
+        self.initial_dirty_cells = num_dirty_cells  # Almacena las celdas sucias al inicio
+        self.final_dirty_cells = num_dirty_cells    # Inicializa las celdas sucias al final
+
         dirty_positions = set()
         while len(dirty_positions) < num_dirty_cells:
             x = self.random.randrange(self.grid.width)
@@ -68,11 +71,20 @@ class RobotModel(Model):
         """Advance the model by one step."""
 
         if self.time_ejection <= 0:
-            print("end")
+            self.calculate_final_dirty_cells()  # Llama para calcular las celdas sucias al finalizar
+            print(f"Initial dirty cells: {self.initial_dirty_cells}")
+            print(f"Final dirty cells: {self.final_dirty_cells}")
             self.running = False
         else:
             self.schedule.step()
             self.time_ejection -= 1
+            
+    def calculate_final_dirty_cells(self):
+        """Counts the remaining dirty cells at the end of the simulation."""
+        self.final_dirty_cells = sum(
+            1 for x in range(self.grid.width) for y in range(self.grid.height)
+            if isinstance(self.grid.get_cell_list_contents((x, y))[0], Cell) and self.grid.get_cell_list_contents((x, y))[0].estado == 1
+        )
 
 
 def agent_portrayal(agent):
