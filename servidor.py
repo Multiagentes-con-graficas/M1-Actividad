@@ -9,7 +9,7 @@ if __name__ == "__main__":
             "With of the grid",
             value=15,
             min_value=2,
-            max_value=50,
+            max_value=20,
             step=1,
             description="With of the grid (M)"
         ),
@@ -17,7 +17,7 @@ if __name__ == "__main__":
             "Height of the grid",
             value=15,
             min_value=2,
-            max_value=50,
+            max_value=20,
             step=1,
             description="Height of the grid (N)"
         ),
