@@ -7,41 +7,41 @@ if __name__ == "__main__":
     modelParams = {
         "width": Slider(
             "With of the grid",
-            value=10,
-            min_value=5,
-            max_value=20,
+            value=15,
+            min_value=2,
+            max_value=50,
             step=1,
             description="With of the grid (M)"
         ),
         "height": Slider(
             "Height of the grid",
-            value=10,
-            min_value=5,
-            max_value=20,
+            value=15,
+            min_value=2,
+            max_value=50,
             step=1,
             description="Height of the grid (N)"
         ),
-        "num_agents": Slider(
-            "Number of robots",
-            value=1,
-            min_value=1,
-            max_value=10,
-            step=1,
-            description="Number of robots in the grid"
-        ),
         "percentage_dirt": Slider(
             "Dirty cells percentage",
-            value=0.3,
+            value=0.1,
             min_value=0.1,
             max_value=1,
             step=0.1,
             description="Dirty cells percentage in the grid"
         ),
+        "num_agents": Slider(
+            "Number of robots",
+            value=1,
+            min_value=1,
+            max_value=20,
+            step=1,
+            description="Number of robots in the grid"
+        ),
         "time_ejection": Slider(
             "Time ejection",
-            value=60,
+            value=50,
             min_value=10,
-            max_value=300,
+            max_value=500,
             step=10,
             description="Time ejection in steps"
         )
